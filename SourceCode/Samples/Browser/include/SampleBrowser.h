@@ -32,6 +32,8 @@
 #include "SamplePlugin.h"
 #include "SdkTrays.h"
 
+#include "../res/Resource.h" // PTR TuanNA [Add include- 10/7/2016]
+
 #if OGRE_PLATFORM == OGRE_PLATFORM_APPLE || OGRE_PLATFORM == OGRE_PLATFORM_APPLE_IOS
 #include "macUtils.h"
 #endif
@@ -345,13 +347,13 @@ protected:
 				createDummyScene();
 				mTrayMgr->showBackdrop("SdkTrays/Bands");
 				mTrayMgr->showAll();
-				((Button*)mTrayMgr->getWidget("StartStop"))->setCaption("Start Sample");
+				((Button*)mTrayMgr->getWidget("StartStop"))->setCaption("Start Game"); //PTR TuanNA [Change label button- 3/11/2016]
 			}
 
 			if (s)  // sample starting
 			{
 				// destroy dummy scene and modify controls
-				((Button*)mTrayMgr->getWidget("StartStop"))->setCaption("Stop Sample");
+				((Button*)mTrayMgr->getWidget("StartStop"))->setCaption("Exit Game"); //PTR TuanNA [Change label button- 3/11/2016]
 				mTrayMgr->showBackdrop("SdkTrays/Shade");
 				mTrayMgr->hideAll();
 				destroyDummyScene();
@@ -377,7 +379,7 @@ protected:
 					createDummyScene();
 					mTrayMgr->showBackdrop("SdkTrays/Bands");
 					mTrayMgr->showAll();
-					((Button*)mTrayMgr->getWidget("StartStop"))->setCaption("Start Sample");
+					((Button*)mTrayMgr->getWidget("StartStop"))->setCaption("Start Game"); //PTR TuanNA [Change label button- 3/11/2016]
 
 					mTrayMgr->showOkDialog("Error!", e.getDescription() + "\nSource: " + e.getSource());
 				}
@@ -461,7 +463,7 @@ protected:
 		{
 			if (b->getName() == "StartStop")   // start or stop sample
 			{
-				if (b->getCaption() == "Start Sample")
+				if (b->getCaption() == "Start Game") //PTR TuanNA [Change Label button- 3/11/2016]
 				{
 					if (mLoadedSamples.empty()) mTrayMgr->showOkDialog("Error!", "No sample selected!");
 					// use the sample pointer we stored inside the thumbnail
@@ -471,7 +473,7 @@ protected:
 			}
 			else if (b->getName() == "UnloadReload")   // unload or reload sample plugins and update controls
 			{
-				if (b->getCaption() == "Unload Samples")
+				if (b->getCaption() == "Disconnect Game") //PTR TuanNA [Change Label button- 3/11/2016]
 				{
 					if (mCurrentSample) mTrayMgr->showYesNoDialog("Warning!", "This will stop the current sample. Unload anyway?");
 					else
@@ -482,14 +484,14 @@ protected:
 
 						unloadSamples();
 						populateSampleMenus();
-						b->setCaption("Reload Samples");
+						b->setCaption("Connect Game");//PTR TuanNA [Change Label button- 3/11/2016]
 					}
 				}
 				else
 				{
 					loadSamples();
 					populateSampleMenus();
-					if (!mLoadedSamples.empty()) b->setCaption("Unload Samples");
+					if (!mLoadedSamples.empty()) b->setCaption("Disconnect Game"); //PTR TuanNA [Change Label button- 3/11/2016]
 
 					try  // attempt to restore the last view before unloading samples
 					{
@@ -679,10 +681,10 @@ protected:
 
 				Sample* s = Ogre::any_cast<Sample*>(mThumbs[menu->getSelectionIndex()]->getUserAny());
 				mTitleLabel->setCaption(menu->getSelectedItem()); 
-				mDescBox->setText("Category: " + s->getInfo()["Category"] + "\nDescription: " + s->getInfo()["Description"]);
+				mDescBox->setText("Map: " + s->getInfo()["Category"] + "\nDescription: " + s->getInfo()["Description"]); //PTR TuanNA [Change label to Map- 3/11/2016]
 
-				if (mCurrentSample != s) ((Button*)mTrayMgr->getWidget("StartStop"))->setCaption("Start Sample");
-				else ((Button*)mTrayMgr->getWidget("StartStop"))->setCaption("Stop Sample");
+				if (mCurrentSample != s) ((Button*)mTrayMgr->getWidget("StartStop"))->setCaption("Start Game"); //PTR TuanNA [Change label- 3/11/2016]
+				else ((Button*)mTrayMgr->getWidget("StartStop"))->setCaption("Exit Game"); //PTR TuanNA [Change label- 3/11/2016]
 			}
 			else if (menu == mRendererMenu)    // renderer selected, so update all settings
 			{
@@ -1260,7 +1262,18 @@ protected:
 #elif OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
 			return NULL;
 #else
-			Ogre::RenderWindow* res = mRoot->initialise(true, "OGRE Sample Browser");
+			//PTR TuanNA [- 3/11/2016]Ogre::RenderWindow* res = mRoot->initialise(true, "OGRE Sample Browser");
+			Ogre::RenderWindow* res = mRoot->initialise(true, "Legend Of Thach Sanh"); //PTR TuanNA [- 3/11/2016]
+			
+			//PTR TuanNA begin comment
+			//[Add icon to app- 10/7/2016]
+			#if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
+			HWND hwnd;
+			res->getCustomAttribute("WINDOW", (void*)&hwnd);
+			LONG iconID   = (LONG)LoadIcon( GetModuleHandle(0), MAKEINTRESOURCE(IDI_APPICON) );
+			SetClassLong( hwnd, GCL_HICON, iconID );
+			#endif
+			//PTR TuanNA end comment
 
 
 #if OGRE_PLATFORM == OGRE_PLATFORM_APPLE_IOS
@@ -1599,10 +1612,11 @@ protected:
 			// create main navigation tray
 			mTrayMgr->showLogo(TL_RIGHT);
 			mTrayMgr->createSeparator(TL_RIGHT, "LogoSep");
-			mTrayMgr->createButton(TL_RIGHT, "StartStop", "Start Sample", 120);
+			//PTR TuanNA [Change Label button- 3/11/2016]mTrayMgr->createButton(TL_RIGHT, "StartStop", "Start Sample", 120);
+			mTrayMgr->createButton(TL_RIGHT, "StartStop", "Start Game", 120);//PTR TuanNA [Change Label button- 3/11/2016]
 #if OGRE_PLATFORM != OGRE_PLATFORM_NACL
 #	if	OGRE_PLATFORM != OGRE_PLATFORM_WINRT
-			mTrayMgr->createButton(TL_RIGHT, "UnloadReload", mLoadedSamples.empty() ? "Reload Samples" : "Unload Samples");
+			mTrayMgr->createButton(TL_RIGHT, "UnloadReload", mLoadedSamples.empty() ? "Connect Game" : "Disconnect Game"); //PTR TuanNA [Change Label button- 3/11/2016]
             mTrayMgr->createButton(TL_RIGHT, "Configure", "Configure");
 #	endif // OGRE_PLATFORM_WINRT
 			mTrayMgr->createButton(TL_RIGHT, "Quit", "Quit");
@@ -1616,10 +1630,10 @@ protected:
 			mSampleMenu = mTrayMgr->createThickSelectMenu(TL_LEFT, "SampleMenu", "Select Sample", 120, 10);
 			mSampleSlider = mTrayMgr->createThickSlider(TL_LEFT, "SampleSlider", "Slide Samples", 120, 42, 0, 0, 0);
 #else
-			mDescBox = mTrayMgr->createTextBox(TL_LEFT, "SampleInfo", "Sample Info", 250, 208);
-			mCategoryMenu = mTrayMgr->createThickSelectMenu(TL_LEFT, "CategoryMenu", "Select Category", 250, 10); 
-			mSampleMenu = mTrayMgr->createThickSelectMenu(TL_LEFT, "SampleMenu", "Select Sample", 250, 10);
-			mSampleSlider = mTrayMgr->createThickSlider(TL_LEFT, "SampleSlider", "Slide Samples", 250, 80, 0, 0, 0);
+			mDescBox = mTrayMgr->createTextBox(TL_LEFT, "SampleInfo", "Map Info", 250, 208); //PTR TuanNA [Change Label button- 3/11/2016]
+			mCategoryMenu = mTrayMgr->createThickSelectMenu(TL_LEFT, "CategoryMenu", "Select Level", 250, 10); //PTR TuanNA [Change Label button- 3/11/2016]
+			mSampleMenu = mTrayMgr->createThickSelectMenu(TL_LEFT, "SampleMenu", "Select Map", 250, 10); //PTR TuanNA [Change Label button- 3/11/2016]
+			mSampleSlider = mTrayMgr->createThickSlider(TL_LEFT, "SampleSlider", "Slide Game", 250, 80, 0, 0, 0); //PTR TuanNA [Change Label button- 3/11/2016]
 #endif
 			/* Sliders do not notify their listeners on creation, so we manually call the callback here
 			to format the slider value correctly. */

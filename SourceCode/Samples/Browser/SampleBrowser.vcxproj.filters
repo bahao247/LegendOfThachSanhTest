@@ -33,9 +33,13 @@
     <ClInclude Include="include\SampleBrowser_OSX.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="res\Resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Common\misc\SampleBrowser_OSX.icns" />
+    <None Include="res\GameOgre.ico" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source Files">
@@ -44,5 +48,11 @@
     <Filter Include="Header Files">
       <UniqueIdentifier>{096927C8-7C86-424B-9D31-CD2B807D81FC}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{ee9ddf9f-8060-4933-99ee-a524fabe292f}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="res\GameOgre.rc" />
   </ItemGroup>
 </Project>
